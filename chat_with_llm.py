@@ -4,7 +4,7 @@ from langchain.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # ==== CONFIG ====
-MODEL_PATH = "models/mistral-7b-instruct.Q4_K_M.gguf"
+MODEL_PATH = "models/gemma-3-12b-it-BF16.gguf"
 INDEX_DIR = "data/faiss_index"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 CONTEXT_SIZE = 2048
@@ -21,25 +21,25 @@ def load_llm():
     return Llama(model_path=MODEL_PATH, n_ctx=CONTEXT_SIZE, n_threads=8)
 
 def rag_query(llm, db, query):
-    relevant_docs = db.similarity_search(query, k=TOP_K)
-    context = "\n\n".join([doc.page_content for doc in relevant_docs])
+    #relevant_docs = db.similarity_search(query, k=TOP_K)
+    #context = "\n\n".join([doc.page_content for doc in relevant_docs])
 
     prompt = f"""Sei un esperto di machine learning e AI. Rispondi alla seguente domanda basandoti SOLO sul contesto fornito.
 
 ### Contesto:
-{context}
+{query}
 
 ### Domanda:
 {query}
 
 ### Risposta:"""
 
-    response = llm(prompt, max_tokens=512, stop=["###"])
+    response = llm("Ciao, come stai?", max_tokens=512, stop=["###"])
     return response["choices"][0]["text"].strip()
 
 def main():
     llm = load_llm()
-    db = load_index()
+    #db = load_index()
 
     print("\n🤖 Pronto per rispondere. Digita una domanda o Ctrl+C per uscire.\n")
     while True:
@@ -47,7 +47,7 @@ def main():
             query = input("📝> ").strip()
             if not query:
                 continue
-            answer = rag_query(llm, db, query)
+            answer = rag_query(llm, llm, query)
             print("\n📌 Risposta:\n", answer, "\n")
         except KeyboardInterrupt:
             print("\n🛑 Uscita.")

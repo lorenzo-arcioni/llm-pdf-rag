@@ -1,5 +1,6 @@
 llama-cpp-python
 langchain
+langchain-community
 faiss-cpu
 pypdf
 tqdm
